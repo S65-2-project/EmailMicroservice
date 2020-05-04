@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailMicroservice", "EmailMicroservice\EmailMicroservice.csproj", "{E1B11495-696F-4889-815F-3174CCEA1263}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailMicroservice", "EmailMicroservice.csproj", "{E1B11495-696F-4889-815F-3174CCEA1263}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
