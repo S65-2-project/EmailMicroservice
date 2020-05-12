@@ -1,46 +1,48 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using EmailMicroservice.Helper;
+using EmailMicroservice.Models;
+using Microsoft.Extensions.Options;
 
 namespace EmailMicroservice.Services
 {
     public class EmailService : IEmailService
     {
-        private string _liskEmail = "s652.lisk@gmail.com";
-        private string _liskPassword = "82VrL!8o!Q-P68UpWRp3pZd2m2Nc*a2Am7";
 
-        public Task SendEmail(string emailAddress, int emailType)
+        private readonly EmailSettings _mailSettings;
+        private readonly IEmailGenerator _emailGenerator;
+        
+        public EmailService(IOptions<EmailSettings> mailSettings, IEmailGenerator emailGenerator)
         {
-            return emailType switch
-            {
-                1 => SendWelcomeEmail(emailAddress),
-                _ => throw new ArgumentException("Something went wrong: ")
-            };
+            _mailSettings = mailSettings.Value;
+            _emailGenerator = emailGenerator;
         }
         
-        public async Task SendWelcomeEmail(string emailAddress)
+        public async Task SendRegisterEmail(string email)
         {
-            var client = new SmtpClient("smtp.gmail.com", 465)
+            await SendEmail(email, _emailGenerator.CreateRegisterEmail());
+        }
+        
+        private async Task SendEmail(string to, Email email)
+        {
+            var mail = new MailMessage
             {
-                Credentials = new NetworkCredential(_liskEmail, _liskPassword),
-                EnableSsl = true
+                From = new MailAddress(_mailSettings.Email),
             };
-            var mail = new MailMessage(_liskEmail, emailAddress, "Welcome to the LiskMarketplace", "bruh") {IsBodyHtml = true};
+            
+            mail.To.Add(new MailAddress(to));
+            mail.Subject = email.Subject;
+            mail.Body = email.Body;
+            mail.IsBodyHtml = true;
 
-            try
+            using var smtp = new SmtpClient(_mailSettings.Host, _mailSettings.Port)
             {
-                using (client)
-                {
-                    client.Send(mail);
-                    await client.SendMailAsync(mail);
-                }
-            }
-            catch (SmtpException e)
-            {
-                throw new ArgumentException("Failed sending Email: "  + e.Message);
-            }
+                Credentials = new NetworkCredential(_mailSettings.Email, _mailSettings.Password), 
+                EnableSsl = _mailSettings.Ssl
+            };
+            
+            await smtp.SendMailAsync(mail);
         }
     }
 }
