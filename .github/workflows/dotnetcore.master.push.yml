@@ -4,6 +4,13 @@ on:
   push:
     branches: [master]
 
+env:
+  CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+  CONTAINER_IMAGE_LATEST: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:latest
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: s65-2
+  GKE_ZONE: europe-west4-a
+
 jobs:
   build:
     # The virtual machine that will be used on GitHub
@@ -36,17 +43,24 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o release
       
-      # Upload the release folder and Dockerfile artifacts to this GitHub workflow for use in the next job
+      # Upload the release folder, Dockerfile and Kubernetes artifacts to this GitHub workflow for use in the next job
       - name: Upload release artifact
         uses: actions/upload-artifact@v1
         with:
           name: release-artifact
           path: ./release
+
       - name: Upload Dockerfile artifact
         uses: actions/upload-artifact@v1
         with:
           name: dockerfile-artifact
           path: ./Dockerfile
+
+      - name: Upload Kubernetes artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: kubernetes-artifact
+          path: ./kube
   
   deliver:
     needs: build
@@ -66,11 +80,28 @@ jobs:
       
       # Deliver Docker image to DockerHub
       - name: Deliver Docker image
-        env:
-          CONTAINER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
-          CONTAINER_IMAGE_LATEST: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:latest
         run: |
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
           docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_LATEST .
           docker push $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE_LATEST
+  
+  deploy:
+    needs: deliver
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Download Kubernetes artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: kubernetes-artifact
+          path: ./kube
+
+
+      # Setup gcloud CLI
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      - name: Configure Docker
