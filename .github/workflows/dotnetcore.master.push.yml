@@ -111,6 +111,8 @@ jobs:
       # Deploy to GKE cluster
       - name: Deploy to GKE cluster
         run: |
-          kubectl apply -f ./kube/certificate.yaml -f ./kube/deployment.yaml -f ./kube/ingress.yaml -f ./kube/service.yaml
+          kubectl apply \
+            -f ./kube/deployment.yaml \
+            -f ./kube/service.yaml
           kubectl rollout status deployment/${{ secrets.REPOSITORY_NAME }}
       
