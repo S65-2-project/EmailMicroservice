@@ -19,7 +19,8 @@ namespace EmailMicroservice.MessageHandlers
         
         public Task HandleMessageAsync(string messageType, RegisterMessage sendable)
         {
-            _emailService.SendRegisterEmail(sendable.Email);
+            Task.Run(() => { _emailService.SendRegisterEmail(sendable.Email); });
+            
             return Task.CompletedTask;
         }
 
