@@ -114,7 +114,7 @@ jobs:
         run: |
           kubectl apply \
             -f ./kube/deployment.yaml \
-            -f ./kube/service.yaml \
+            -f ./kube/service.yaml
           kubectl rollout status deployment/${{ secrets.REPOSITORY_NAME }}
           kubectl get services -o wide
         
