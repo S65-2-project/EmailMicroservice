@@ -2,7 +2,7 @@ name: .NET Core push on master branch
 
 on:
   push:
-    branches: [master]
+    branches: [feature/*]
 
 env:
   DOCKER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
@@ -10,6 +10,7 @@ env:
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: s65-2
   GKE_ZONE: europe-west4-a
+  GKE_NAMESPACE: s65-2
 
 jobs:
   build:
@@ -101,18 +102,21 @@ jobs:
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '290.0.1'
-          service_account_key: ${{ secrets.GKE_SA_KEY }}
           project_id: $GKE_PROJECT
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
 
       # Get GKE cluster credentials
       - name: Get GKE cluster credentials
-        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project
+        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
 
       # Deploy to GKE cluster
       - name: Deploy to GKE cluster
-        run: |
-          kubectl apply \
-            -f ./kube/deployment.yaml \
-            -f ./kube/service.yaml
-          kubectl rollout status deployment/${{ secrets.REPOSITORY_NAME }}
+        uses: azure/k8s-deploy@v1
+        with:
+          namespace: $GKE_NAMESPACE
+          manifests: |
+            ./kube/deployment.yaml
+            ./kube/service.yaml
+          images: |
+            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
       
