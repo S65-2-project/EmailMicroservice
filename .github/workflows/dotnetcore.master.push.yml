@@ -116,7 +116,7 @@ jobs:
             -f ./kube/autoscaler.yaml \
             -f ./kube/deployment.yaml \
             -f ./kube/service.yaml
-          kubectl rollout status Deployment/email-service
+          kubectl rollout status Deployment/${{ secrets.REPOSITORY_NAME }} --namespace $GKE_NAMESPACE
           kubectl get services -o wide
         
         # with:
