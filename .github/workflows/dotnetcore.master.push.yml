@@ -110,13 +110,20 @@ jobs:
         run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
 
       # Deploy to GKE cluster
-      - name: Deploy to GKE cluster
-        uses: azure/k8s-deploy@v1
-        with:
-          namespace: $GKE_NAMESPACE
-          manifests: |
-            ./kube/deployment.yaml
-            ./kube/service.yaml
-          images: |
-            ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+      - name: Deploy to GKE clusters
+        run: |
+          kubectl apply \
+            -f ./kube/deployment.yaml \
+            -f ./kube/service.yaml \
+            --image ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+          kubectl rollout status deployment/${{ secrets.REPOSITORY_NAME }}
+          kubectl get services -o wide
+        
+        # with:
+        #   namespace: $GKE_NAMESPACE
+        #   manifests: |
+        #     ./kube/deployment.yaml
+        #     ./kube/service.yaml
+        #   images: |
+        #     ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
       
