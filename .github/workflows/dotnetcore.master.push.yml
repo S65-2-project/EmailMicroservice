@@ -3,10 +3,14 @@ name: .NET Core push on master branch
 on:
   push:
     branches: [feature/*]
+    tags:
+      - '**'
 
 env:
-  DOCKER_IMAGE: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
-  DOCKER_IMAGE_LATEST: ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:latest
+  DOCKER_ORGANIZATION: s652
+  DOCKER_REPOSITORY: email-service
+  DOCKER_IMAGE: s652/email-service:${{ github.sha }}
+  DOCKER_IMAGE_LATEST: s652/email-service:latest
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: s65-2
   GKE_ZONE: europe-west4-a
@@ -107,7 +111,7 @@ jobs:
 
       # Get GKE cluster credentials
       - name: Get GKE cluster credentials
-        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+        run: gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE
 
       # Deploy to GKE cluster
       - name: Deploy to GKE clusters
@@ -116,14 +120,27 @@ jobs:
             -f ./kube/autoscaler.yaml \
             -f ./kube/deployment.yaml \
             -f ./kube/service.yaml
-          kubectl rollout status Deployment/${{ secrets.REPOSITORY_NAME }} --namespace $GKE_NAMESPACE
+          kubectl set image Deployment/$DOCKER_REPOSITORY --namespace $GKE_NAMESPACE $DOCKER_REPOSITORY=$DOCKER_IMAGE
+          kubectl rollout status Deployment/$DOCKER_REPOSITORY --namespace $GKE_NAMESPACE
           kubectl get services -o wide
         
-        # with:
-        #   namespace: $GKE_NAMESPACE
-        #   manifests: |
-        #     ./kube/deployment.yaml
-        #     ./kube/service.yaml
-        #   images: |
-        #     ${{ secrets.DOCKER_ORGANIZATION }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}
+      # - name: Setup Kubectl
+      #   uses: azure/setup-kubectl@v1
+
+      # - name: Set context via kubeconfig
+      #   uses: azure/k8s-set-context@v1
+      #   with:
+      #     method: kubeconfig
+      #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        
+      # - name: Deploy Kubernetes with manifests
+      #   uses: azure/k8s-deploy@v1
+      #   with:
+      #     namespace: $GKE_NAMESPACE
+      #     manifests: |
+      #       ./kube/autoscaler.yaml
+      #       ./kube/deployment.yaml
+      #       ./kube/service.yaml
+      #     images: |
+      #       $DOCKER_ORGANIZATION/$DOCKER_REPOSITORY:${{ github.sha }}
       
