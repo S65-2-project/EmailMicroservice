@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="S652.MessageBroker" Version="1.2.1" />
+      <PackageReference Include="Sentry.AspNetCore" Version="2.1.1" />
     </ItemGroup>
 
 
