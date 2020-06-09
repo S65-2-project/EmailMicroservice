@@ -35,7 +35,9 @@ jobs:
         run: dotnet build
       
       - name: Test
-        run: dotnet test --results-directory /coverage --collect:"Code Coverage"
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      
   
       - name: Artifacts
         uses: actions/upload-artifact@master
