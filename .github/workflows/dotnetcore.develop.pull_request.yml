@@ -37,14 +37,6 @@ jobs:
       - name: Test
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-      
-  
-      - name: Artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: Coverage
-          path: coverage-reports
-
       # Runs SonarCloud Scan
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
