@@ -35,14 +35,7 @@ jobs:
         run: dotnet build
       
       - name: Test
-        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover
-  
-      - name: Report
-        run: |
-          export DOTNET_ROOT=/opt/hostedtoolcache/dncs/2.2.204/x64
-          export MSBuildSDKsPath=$DOTNET_ROOT/sdk/$(${DOTNET_ROOT}/dotnet --version)/Sdks
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          ~/.dotnet/tools/reportgenerator "-reports:*Tests/coverage.opencover.xml" "-targetdir:coverage-reports"
+        run: dotnet test ./%{{ env.PROJECT_NAME}}/{{ env.PROJECT_NAME}}.csproj --results-directory /coverage --collect:"Code Coverage"
   
       - name: Artifacts
         uses: actions/upload-artifact@master
