@@ -48,7 +48,7 @@ jobs:
           beginArguments: >
               /d:sonar.verbose="true"
               /d:sonar.cs.opencover.reportsPaths='"/path/to/coverage.xml","/path/to/coverage.2.xml"'
-              /d:sonar.coverage.exclusions='"**/*.cs","**/*.md","sonar-project.properties"'
+              /d:sonar.coverage.exclusions='"**/*.cs","**/*.md","**/sonar-project.properties"'
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
