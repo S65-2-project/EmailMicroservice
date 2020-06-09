@@ -34,9 +34,17 @@ jobs:
       - name: Build
         run: dotnet build
       
-      # Test the project
       - name: Test
-        run: dotnet test
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover
+  
+      - name: Report
+        run: ~/.dotnet/tools/reportgenerator "-reports:*Tests/coverage.opencover.xml" "-targetdir:coverage-reports"
+  
+      - name: Artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Coverage
+          path: coverage-reports
 
       # Runs SonarCloud Scan
       - name: SonarCloud Scan
