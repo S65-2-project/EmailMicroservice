@@ -32,6 +32,8 @@ jobs:
   sonarcloud:
     runs-on: ubuntu-18.04
     steps:
+      - uses: actions/checkout@v2
+      
       - name: Sonarscanner for dotnet
         uses: Secbyte/dotnet-sonarscanner@v2.3
         with:
