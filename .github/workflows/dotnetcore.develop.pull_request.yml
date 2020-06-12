@@ -54,7 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
 
-    - name: Run local k6 test
-      uses: k6io/action@v0.1
-      with:
-        filename: test.js
+        - name: Run local k6 test
+          uses: k6io/action@v0.1
+          with:
+            filename: test.js
