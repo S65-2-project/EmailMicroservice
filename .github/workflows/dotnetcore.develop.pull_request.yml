@@ -53,14 +53,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_ACCESS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Generate Lighthouse Report
-        uses: justinribeiro/lighthouse-action@master
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          url: 34.120.162.205
-          wptConnectionSpeed: threegfast
-      - name: Saving Lighthouse Audit Artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: lighthouse-artifacts
-          path: './results'
+
+    - name: Run local k6 test
+      uses: k6io/action@v0.1
+      with:
+        filename: test.js
