@@ -33,10 +33,15 @@ jobs:
       # Build the project
       - name: Build
         run: dotnet build
-      
+    
       - name: Test
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
+  sonarscanner:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      
       - name: Sonarscanner for dotnet
         uses: Secbyte/dotnet-sonarscanner@v2.3
         with:
