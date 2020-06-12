@@ -57,7 +57,7 @@ jobs:
         uses: k6io/action@v0.1
         with:
           filename: test.js
-  
+
       - name: Create /tmp/lighthouse-report directory
         run: mkdir /tmp/lighthouse-report
       
@@ -65,7 +65,7 @@ jobs:
         uses: foo-software/lighthouse-check-action@master
         with:
           outputDirectory: /tmp/lighthouse-report
-          urls: 34.120.162.205
+          urls: http://34.120.162.205
 
       - name: Upload Lighthouse report artifact
         uses: actions/upload-artifact@master
