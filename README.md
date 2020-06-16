@@ -4,13 +4,13 @@ This is the emailservice of the Lisk delegate market project. It was made as a g
 It was made with .NET Core 3.1 and will function as a message queue receiver for the Lisk Delegate Market. To make fully use of this project it is recommended to also look at the other services in the project. 
 The other services can be found [here](https://github.com/S65-2-project). If you want to see the live product it can be found [here](https://delegate-market.nl).
 
-Via this service users can register on the platform, log in and update their profile if they want to. It also takes care of creating new JWT. 
+Via this service the user will receive an email after registration.
 
 ## External sources
 To run this project you will need to run the following services:
-- [MongoDB](https://www.mongodb.com/re)
 - [RabbitMQ](https://www.rabbitmq.com/)
 - [Sentry](https://sentry.io)
+- [Google SMTP](https://support.google.com/mail/answer/7126229?hl=nl)
 
 ## Configuration
 This is an example for the appsettings.json file that is needed to configure the application. 
@@ -20,7 +20,7 @@ This is an example for the appsettings.json file that is needed to configure the
   "EmailSettings" : {
     "Email": "",
     "Password": "",
-    "Port": 587,
+    "Port": 0,
     "Host": "",
     "Ssl": true
   },
