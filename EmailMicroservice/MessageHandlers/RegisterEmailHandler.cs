@@ -29,7 +29,6 @@ namespace EmailMicroservice.MessageHandlers
                 throw;
             }
             
-            
             return Task.CompletedTask;
         }
 
