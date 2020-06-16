@@ -70,7 +70,5 @@ All images with a SHA tag are development builds and versions with a version tag
 The project is deployed to a kubernetes cluster. in de [kube_develop](kube_develop) folder are all the different kubernetes configuration files for the development builds.  In the [kube](kube) folder are the configuration files for the production builds. 
 
 - autoscaler.yaml -> this is the autoscaler for the deployment
-- cluster-issuer.yaml-> to ensure there is a cluster issuer for the TLS certificates
 - deployment.yaml -> the deployment of the service itself
 - service.yaml -> the service that exposes the deployment for other services and resources within the cluster
-- ingress.yaml -> the ingress that is used to access the deployment from outside, it is enabled with a TLS certificate
