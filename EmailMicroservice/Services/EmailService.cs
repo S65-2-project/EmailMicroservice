@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using EmailMicroservice.Helper;
@@ -44,6 +46,12 @@ namespace EmailMicroservice.Services
                 EnableSsl = _mailSettings.Ssl
             };
             
+            // Always returns true for certificate validation
+            ServicePointManager.ServerCertificateValidationCallback = delegate(object s, X509Certificate certificate,
+                X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            {
+                return true;
+            };
             await smtp.SendMailAsync(mail);
         }
     }
